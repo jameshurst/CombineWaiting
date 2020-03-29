@@ -39,6 +39,7 @@ Some custom `XCTAssertEqual` functions are provided for working with `WaitResult
 * Select **File** > **Swift Packages** > **Add Package Dependency...**
 * Enter the package repository URL: `https://github.com/jameshurst/CombineWaiting.git`
 * Confirm the version and let Xcode resolve the package
+* Add `CombineWaiting` to your test target
 
 ## License
 
