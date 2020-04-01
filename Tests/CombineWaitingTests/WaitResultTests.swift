@@ -81,4 +81,28 @@ class WaitResultTests: XCTestCase {
             throw error
         }
     }
+
+    func test_error_withFailure_shouldReturnError() throws {
+        XCTAssertEqual(try WaitResult<Int, SomeError>.failure(values: [], error: .some).error(), .some)
+    }
+
+    func test_error_withSuccess_shouldThrow() throws {
+        do {
+            _ = try WaitResult<Int, SomeError>.partial(values: [1]).error()
+            XCTFail("Expected WaitError.noFailure")
+        } catch WaitError.noFailure {
+            // success
+        } catch {
+            XCTFail(String(describing: error))
+        }
+
+        do {
+            _ = try WaitResult<Int, SomeError>.complete(values: [1]).error()
+            XCTFail("Expected WaitError.noFailure")
+        } catch WaitError.noFailure {
+            // success
+        } catch {
+            XCTFail(String(describing: error))
+        }
+    }
 }

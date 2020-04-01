@@ -27,6 +27,7 @@ A `WaitResult` has some useful functions to query the contained values such as:
 * `hasValues()` - Returns whether the result contains any values.
 * `values()` - Returns the values contained in the result.
 * `value(at:)` - Returns the value at the given index.
+* `error()` - Returns the error if the result was a failure.
 
 ## XCTest Integration
 

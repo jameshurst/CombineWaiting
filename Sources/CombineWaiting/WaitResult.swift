@@ -43,6 +43,19 @@ public extension WaitResult {
         guard index < values.count else { throw WaitError.noValue }
         return values[index]
     }
+
+    /// Returns the contained error if this result is a failure.
+    /// - Throws:
+    ///     - `WaitError.noFailure` if this result is not a failure.
+    /// - Returns: The error contained in this result.
+    func error() throws -> Failure {
+        switch self {
+        case let .failure(_, error):
+            return error
+        case .partial, .complete:
+            throw WaitError.noFailure
+        }
+    }
 }
 
 public extension WaitResult where Failure == Never {
