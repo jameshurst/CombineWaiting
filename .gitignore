@@ -3,3 +3,4 @@
 xcuserdata/
 *.xcodeproj
 tools/.bin/
+tools/.mint/
