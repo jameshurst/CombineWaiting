@@ -3,37 +3,6 @@ import CombineWaiting
 import XCTest
 
 class WaitResultTests: XCTestCase {
-    func test_hasValues_withValuesNoValues_shouldBeFalse() throws {
-        XCTAssertFalse(try WaitResult<Int, SomeError>.partial(values: []).hasValue())
-        XCTAssertFalse(try WaitResult<Int, SomeError>.complete(values: []).hasValue())
-    }
-
-    func test_hasValues_withValues_shouldBeTrue() throws {
-        XCTAssertTrue(try WaitResult<Int, SomeError>.partial(values: [1]).hasValue())
-        XCTAssertTrue(try WaitResult<Int, SomeError>.complete(values: [1]).hasValue())
-    }
-
-    func test_hasValues_withValuesNoValues_andNeverFailure_shouldBeFalse() {
-        XCTAssertFalse(WaitResult<Int, Never>.partial(values: []).hasValue())
-        XCTAssertFalse(WaitResult<Int, Never>.complete(values: []).hasValue())
-    }
-
-    func test_hasValues_withValues_andNeverFailure_shouldBeTrue() {
-        XCTAssertTrue(WaitResult<Int, Never>.partial(values: [1]).hasValue())
-        XCTAssertTrue(WaitResult<Int, Never>.complete(values: [1]).hasValue())
-    }
-
-    func test_isEmpty_withFailure_shouldThrow() throws {
-        do {
-            _ = try WaitResult<Int, SomeError>.failure(values: [1], error: .some).hasValue()
-            XCTFail("Expected SomeError.some")
-        } catch SomeError.some {
-            // success
-        } catch {
-            throw error
-        }
-    }
-
     func test_values_shouldReturnValues() throws {
         XCTAssertEqual(try WaitResult<Int, SomeError>.partial(values: [1]).values(), [1])
         XCTAssertEqual(try WaitResult<Int, SomeError>.complete(values: [1]).values(), [1])
@@ -47,7 +16,7 @@ class WaitResultTests: XCTestCase {
     func test_values_withFailure_shouldThrow() throws {
         do {
             _ = try WaitResult<Int, SomeError>.failure(values: [1], error: .some).values()
-            XCTFail("Expected SomeError.some")
+            XCTFail("Expected throw")
         } catch SomeError.some {
             // success
         } catch {
@@ -55,27 +24,30 @@ class WaitResultTests: XCTestCase {
         }
     }
 
-    func test_value_shouldReturnValue() throws {
-        XCTAssertEqual(try WaitResult<Int, SomeError>.partial(values: [1]).value(), 1)
-        XCTAssertEqual(try WaitResult<Int, SomeError>.complete(values: [1]).value(), 1)
+    func test_values_withCount_withCorrectNumberOfValues_shouldReturnValues() throws {
+        XCTAssertEqual(try WaitResult<Int, Never>.partial(values: [1, 2]).values(2), [1, 2])
     }
 
-    func test_value_withFailure_shouldThrow() throws {
+    func test_values_withCount_withWrongNumberOfValues_shouldThrow() throws {
         do {
-            _ = try WaitResult<Int, SomeError>.failure(values: [1], error: .some).value()
-            XCTFail("Expected SomeError.some")
-        } catch SomeError.some {
+            _ = try WaitResult<Int, Never>.partial(values: [1, 2, 3]).values(2)
+            XCTFail("Expected throw")
+        } catch let WaitError.unexpectedNumberOfValues(count) where count == 3 {
             // success
         } catch {
             throw error
         }
     }
 
-    func test_value_withInvalidIndex_shouldThrow() throws {
+    func test_singleValue_withOneValue_shouldReturnValue() throws {
+        XCTAssertEqual(try WaitResult<Int, Never>.partial(values: [1]).singleValue(), 1)
+    }
+
+    func test_singleValue_withWrongNumberOfValues_shouldThrow() throws {
         do {
-            _ = try WaitResult<Int, SomeError>.partial(values: [1]).value(at: 1)
-            XCTFail("Expected WaitError.noValue")
-        } catch WaitError.noValue {
+            _ = try WaitResult<Int, Never>.partial(values: [1, 2]).singleValue()
+            XCTFail("Expected throw")
+        } catch let WaitError.unexpectedNumberOfValues(count) where count == 2 {
             // success
         } catch {
             throw error
@@ -93,7 +65,7 @@ class WaitResultTests: XCTestCase {
         } catch WaitError.noFailure {
             // success
         } catch {
-            XCTFail(String(describing: error))
+            throw error
         }
 
         do {
@@ -102,7 +74,7 @@ class WaitResultTests: XCTestCase {
         } catch WaitError.noFailure {
             // success
         } catch {
-            XCTFail(String(describing: error))
+            throw error
         }
     }
 }

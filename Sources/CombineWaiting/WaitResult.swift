@@ -1,29 +1,21 @@
-/// The result of a wait operation.
+/// The result of a publisher wait operation.
 public enum WaitResult<Value, Failure: Error> {
     /// The publisher emitted a sequence of values without a completion. This may be an empty array if the wait
     /// timed out before the publisher emitted any values.
     case partial(values: [Value])
-    /// The publisher completed successfully after emitting some number of values.
+    /// The publisher completed successfully after emitting some values.
     case complete(values: [Value])
-    /// The publisher completed with a failure after emitting some number of values.
+    /// The publisher completed with a failure after emitting some values.
     case failure(values: [Value], error: Failure)
 }
 
 extension WaitResult: Equatable where Value: Equatable, Failure: Equatable {}
 
 public extension WaitResult {
-    /// Returns whether this result contains any values.
+    /// Returns the values emitted by the publisher.
     /// - Throws:
-    ///     - The contained error if this result is a failure.
-    /// - Returns: Whether this result contains any values.
-    func hasValue() throws -> Bool {
-        try !values().isEmpty
-    }
-
-    /// Returns the values contained in this result.
-    /// - Throws:
-    ///     - The contained error if this result is a failure.
-    /// - Returns: The array of values.
+    ///   - The the error emitted by the publisher if it completed with a failure.
+    /// - Returns: An array containing the values emitted by the publisher.
     func values() throws -> [Value] {
         switch self {
         case let .partial(values), let .complete(values):
@@ -33,21 +25,31 @@ public extension WaitResult {
         }
     }
 
-    /// Returns the value at the given index.
-    /// - Parameter index: The index of the value to retrieve.
+    /// Returns exactly the given number of values or throws an error if the publisher did not emit exactly the given
+    /// number of values.
+    /// - Parameter count: The number of values to return.
     /// - Throws:
-    ///     - `WaitError.noValue` if there is no value at the given index.
-    /// - Returns: The value at the given index.
-    func value(at index: Int = 0) throws -> Value {
+    ///   - `WaitError.wrongNumberOfValues` if the publisher did not emit exactly the given number of values.
+    /// - Returns: An array containing exactly the given number of values.
+    func values(_ count: Int) throws -> [Value] {
         let values = try self.values()
-        guard index < values.count else { throw WaitError.noValue }
-        return values[index]
+        guard values.count == count else { throw WaitError.unexpectedNumberOfValues(values.count) }
+        return values
     }
 
-    /// Returns the contained error if this result is a failure.
+    /// Returns the emitted value or throws an error if the publisher did not emit exactly one value.
     /// - Throws:
-    ///     - `WaitError.noFailure` if this result is not a failure.
-    /// - Returns: The error contained in this result.
+    ///   - The the error emitted by the publisher if it completed with a failure.
+    ///   - `WaitError.wrongNumberOfValues` if the publisher did not emit exactly one value.
+    /// - Returns: The single value emitted by the publisher.
+    func singleValue() throws -> Value {
+        try values(1)[0]
+    }
+
+    /// Returns the error emitted by the publisher if it completed with a failure.
+    /// - Throws:
+    ///   - `WaitError.noFailure` if the publisher did not complete with a failure.
+    /// - Returns: The error emitted by the publisher.
     func error() throws -> Failure {
         switch self {
         case let .failure(_, error):
@@ -59,14 +61,8 @@ public extension WaitResult {
 }
 
 public extension WaitResult where Failure == Never {
-    /// Returns whether this result contains any values.
-    /// - Returns: Whether this result contains any values.
-    func hasValue() -> Bool {
-        !values().isEmpty
-    }
-
-    /// Returns the values contained in this result.
-    /// - Returns: The array of values.
+    /// Returns the values emitted by the publisher.
+    /// - Returns: An array containing the values emitted by the publisher.
     func values() -> [Value] {
         switch self {
         case let .partial(values), let .complete(values):
