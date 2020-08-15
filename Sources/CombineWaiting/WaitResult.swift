@@ -29,7 +29,7 @@ public extension WaitResult {
     /// number of values.
     /// - Parameter count: The number of values to return.
     /// - Throws:
-    ///   - `WaitError.wrongNumberOfValues` if the publisher did not emit exactly the given number of values.
+    ///   - `WaitError.unexpectedNumberOfValues` if the publisher did not emit exactly the given number of values.
     /// - Returns: An array containing exactly the given number of values.
     func values(_ count: Int) throws -> [Value] {
         let values = try self.values()
@@ -40,7 +40,7 @@ public extension WaitResult {
     /// Returns the emitted value or throws an error if the publisher did not emit exactly one value.
     /// - Throws:
     ///   - The the error emitted by the publisher if it completed with a failure.
-    ///   - `WaitError.wrongNumberOfValues` if the publisher did not emit exactly one value.
+    ///   - `WaitError.unexpectedNumberOfValues` if the publisher did not emit exactly one value.
     /// - Returns: The single value emitted by the publisher.
     func singleValue() throws -> Value {
         try values(1)[0]

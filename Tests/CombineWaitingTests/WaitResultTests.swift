@@ -28,7 +28,7 @@ class WaitResultTests: XCTestCase {
         XCTAssertEqual(try WaitResult<Int, Never>.partial(values: [1, 2]).values(2), [1, 2])
     }
 
-    func test_values_withCount_withWrongNumberOfValues_shouldThrow() throws {
+    func test_values_withCount_withUnexpectedNumberOfValues_shouldThrow() throws {
         do {
             _ = try WaitResult<Int, Never>.partial(values: [1, 2, 3]).values(2)
             XCTFail("Expected throw")
@@ -43,7 +43,7 @@ class WaitResultTests: XCTestCase {
         XCTAssertEqual(try WaitResult<Int, Never>.partial(values: [1]).singleValue(), 1)
     }
 
-    func test_singleValue_withWrongNumberOfValues_shouldThrow() throws {
+    func test_singleValue_withUnexpectedNumberOfValues_shouldThrow() throws {
         do {
             _ = try WaitResult<Int, Never>.partial(values: [1, 2]).singleValue()
             XCTFail("Expected throw")
