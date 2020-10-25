@@ -6,6 +6,7 @@ public extension Publisher {
     /// Waits for this publisher to complete within the given timeout.
     /// - Parameter timeout: The maximum amount of time to wait for values.
     /// - Returns: The values emitted by this publisher and the status of this publisher.
+    @discardableResult
     func wait(timeout: TimeInterval = 0, executing work: @escaping () -> Void = {}) -> WaitResult<Output, Failure> {
         var values = [Output]()
         var completion: Subscribers.Completion<Failure>?
