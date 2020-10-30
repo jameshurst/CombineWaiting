@@ -1,6 +1,5 @@
 import Combine
 import Foundation
-import XCTest
 
 public extension Publisher {
     /// Waits for this publisher to complete within the given timeout.

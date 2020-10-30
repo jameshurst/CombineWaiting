@@ -7,7 +7,6 @@ Synchronously wait for Combine publishers to emit values in tests.
 ```swift
 import Combine
 import CombineWaiting
-import XCTest
 
 let publisher = // AnyPublisher<Success, Failure>
 XCTAssertEqual(publisher.wait(), expected)
@@ -28,10 +27,6 @@ A `WaitResult` has some useful functions to query the contained values such as:
 * `values()` - Returns the values contained in the result.
 * `value(at:)` - Returns the value at the given index.
 * `error()` - Returns the error if the result was a failure.
-
-## XCTest Integration
-
-Some custom `XCTAssertEqual` functions are provided for working with `WaitResult` types. You can assert a `WaitResult` against a single value, a sequence of values, or a failure.
 
 ## Installation
 
