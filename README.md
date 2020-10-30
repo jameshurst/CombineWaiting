@@ -1,32 +1,45 @@
 # CombineWaiting
 
-Synchronously wait for Combine publishers to emit values in tests.
+Synchronously wait for Combine publishers.
+
+*This library is only meant to be used for testing purposes.*
 
 ## Usage
 
 ```swift
-import Combine
-import CombineWaiting
-
-let publisher = // AnyPublisher<Success, Failure>
-XCTAssertEqual(publisher.wait(), expected)
+let publisher = ... // AnyPublisher<Success, Failure>
+XCTAssertEqual(publisher.wait(timeout: 1).values(), expected)
 ```
 
-## Waiting for Publishers
+You can wait for any `Publisher` using the `wait` function.
 
-You can wait for any `Publisher` to emit values using the `wait` function.
-This function accepts a timeout and and an optional work function to execute post-subscription. The work function may be used to cause expected values to be emitted.
+This function accepts a timeout and and an optional work closure to execute post-subscription. The work closure may be used to cause expected values to be produced.
 
-The wait function returns a `WaitResult` that contains one of the following:
-* `.partial(values)` - The publisher produced some values, but did not complete.
-* `.complete(values)` - The publisher produced some values and completed.
-* `.failure(values, error)` - The publisher produced some values and completed with a failure.
+The result of the wait operation is a `WaitResult`.
 
-A `WaitResult` has some useful functions to query the contained values such as:
-* `hasValues()` - Returns whether the result contains any values.
-* `values()` - Returns the values contained in the result.
-* `value(at:)` - Returns the value at the given index.
-* `error()` - Returns the error if the result was a failure.
+* `WaitResult.partial(values)` 
+  * The publisher did not complete.
+* `WaitResult.complete(values)`
+  *  The publisher completed successfully.
+* `WaitResult.failure(values, error)` 
+  * The publisher completed with an error.
+
+You can use the following functions to easily access a result's values.
+
+* `values()` 
+  * Ensures that the publisher did not complete with an error
+  * Returns the produced values
+* `values(n)`
+  * Ensures that the publisher did not complete with an error
+  * Ensures that the publisher produced `n` values
+  * Returns the produced values
+* `singleValue()` 
+  * Ensures that the publisher did not complete with an error
+  * Ensures that the publisher produced a single value
+  * Returns the produced value
+* `error()`
+  *  Ensures that publisher completed with an error
+  *  Returns the produced error
 
 ## Installation
 

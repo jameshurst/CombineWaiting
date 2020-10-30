@@ -2,9 +2,9 @@ import Combine
 import Foundation
 
 public extension Publisher {
-    /// Waits for this publisher to complete within the given timeout.
+    /// Waits for this publisher to produce values.
     /// - Parameter timeout: The maximum amount of time to wait for values.
-    /// - Returns: The values emitted by this publisher and the status of this publisher.
+    /// - Returns: The result of the wait operation.
     @discardableResult
     func wait(timeout: TimeInterval = 0, executing work: @escaping () -> Void = {}) -> WaitResult<Output, Failure> {
         var values = [Output]()

@@ -32,7 +32,7 @@ class WaitResultTests: XCTestCase {
         do {
             _ = try WaitResult<Int, Never>.partial(values: [1, 2, 3]).values(2)
             XCTFail("Expected throw")
-        } catch let WaitError.unexpectedNumberOfValues(count) where count == 3 {
+        } catch let WaitResultError.unexpectedNumberOfValues(count) where count == 3 {
             // success
         } catch {
             throw error
@@ -47,7 +47,7 @@ class WaitResultTests: XCTestCase {
         do {
             _ = try WaitResult<Int, Never>.partial(values: [1, 2]).singleValue()
             XCTFail("Expected throw")
-        } catch let WaitError.unexpectedNumberOfValues(count) where count == 2 {
+        } catch let WaitResultError.unexpectedNumberOfValues(count) where count == 2 {
             // success
         } catch {
             throw error
@@ -62,7 +62,7 @@ class WaitResultTests: XCTestCase {
         do {
             _ = try WaitResult<Int, SomeError>.partial(values: [1]).error()
             XCTFail("Expected WaitError.noFailure")
-        } catch WaitError.noFailure {
+        } catch WaitResultError.noFailure {
             // success
         } catch {
             throw error
@@ -71,7 +71,7 @@ class WaitResultTests: XCTestCase {
         do {
             _ = try WaitResult<Int, SomeError>.complete(values: [1]).error()
             XCTFail("Expected WaitError.noFailure")
-        } catch WaitError.noFailure {
+        } catch WaitResultError.noFailure {
             // success
         } catch {
             throw error
